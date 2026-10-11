@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jurnal Pengamatan Ilmiah - Biology Project</title>
+    
+    <!-- STREAMING_CHUNK:Loading libraries and fonts... -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- STREAMING_CHUNK:Defining luxury styling... -->
+    <style>
+        :root {
+            --bg-deep: #010a05;
+            --emerald-dark: #021a0d;
+            --emerald-light: #0a4d28;
+            --gold-primary: #d4af37;
+            --gold-light: #f9f5e8;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .serif-luxury {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Animated Dark Biological Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, var(--emerald-dark) 0%, var(--bg-deep) 100%);
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0) 70%);
+            animation: drift 20s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes drift {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg) scale(1.5); opacity: 0; }
+        }
+
+        /* Glassmorphism Panels */
+        .glass-panel {
+            background: rgba(2, 26, 13, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
+            border-radius: 1.5rem;
+        }
+
+        .glass-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s;
+        }
+        .glass-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 30px -5px var(--gold-glow);
+        }
+
+        /* Text Shimmer */
+        .gold-shimmer {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 5s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* Scientific Table Styles */
+        .sci-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85rem; }
+        .sci-table th { background: rgba(212, 175, 55, 0.1); color: var(--gold-primary); font-weight: 600; padding: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
+        .sci-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; }
+        .sci-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+        .sci-table .text-left { text-align: left; }
+
+        /* Full Screen Section Management */
+        .section-container {
+            display: none;
+            opacity: 0;
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .section-container.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Slider Styles */
+        .slider-wrapper { position: relative; overflow: hidden; width: 100%; border-radius: 1.5rem; }
+        .slider-track { display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; }
+        .slide { min-width: 100%; width: 100%; padding: 1rem; box-sizing: border-box; }
+
+        /* Custom Scrollbar for text areas */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.6); }
+
+        .btn-luxury {
+            background: linear-gradient(135deg, #bf953f, #fcf6ba);
+            color: #000;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            transition: all 0.3s;
+        }
+        .btn-luxury:hover { box-shadow: 0 0 30px rgba(212, 175, 55, 0.5); transform: translateY(-2px); }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- STREAMING_CHUNK:Setting up ambient background... -->
+    <div class="ambient-bg" id="bg-particles"></div>
+
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8 w-full max-w-7xl mx-auto z-10 relative">
+
+        <!-- ============================================== -->
+        <!-- SECTION 1: OPENING -->
+        <!-- ============================================== -->
+        <!-- STREAMING_CHUNK:Building Opening Section... -->
+        <section id="sec-opening" class="section-container active w-full">
+            <div class="glass-panel p-10 md:p-20 text-center transform hover:scale-[1.01] transition-transform duration-500">
+                <div class="w-20 h-20 mx-auto mb-8 relative">
+                    <div class="absolute inset-0 bg-yellow-500/20 blur-xl rounded-full animate-pulse"></div>
+                    <i class="fa-solid fa-dna text-5xl text-[#d4af37] relative z-10 drop-shadow-[0_0_15px_rgba(212,175,55,0.8)]"></i>
+                </div>
+                
+                <h2 class="text-sm md:text-base tracking-[0.4em] text-gray-400 uppercase mb-4">Laporan Praktikum Biologi</h2>
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 gold-shimmer serif-luxury leading-tight">Pengaruh Intensitas Cahaya<br>Terhadap Perkecambahan</h1>
+                
+                <div class="my-12 relative max-w-3xl mx-auto">
+                    <div class="absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/30 to-transparent"></div>
+                    <span class="relative bg-[#021a0d] px-6 text-xs md:text-sm tracking-[0.3em] text-[#d4af37] border border-[#d4af37]/20 rounded-full py-1">TIM PENELITI</span>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-4 md:gap-8 mb-16">
+                    <div class="glass-card px-6 py-2 rounded-full"><span class="font-medium tracking-widest text-sm">ALFA</span></div>
+                    <div class="glass-card px-6 py-2 rounded-full"><span class="font-medium tracking-widest text-sm">QUEENZY</span></div>
+                    <div class="glass-card px-6 py-2 rounded-full"><span class="font-medium tracking-widest text-sm">FAYOLA</span></div>
+                    <div class="glass-card px-6 py-2 rounded-full"><span class="font-medium tracking-widest text-sm">JOSE</span></div>
+                </div>
+
+                <button onclick="goToSection('sec-chart')" class="btn-luxury px-10 py-4 rounded-full font-bold tracking-widest uppercase text-sm cursor-pointer group">
+                    Lihat Analisis Data <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 2: LUXURY DIAGRAM -->
+        <!-- ============================================== -->
+        <!-- STREAMING_CHUNK:Building Luxury 3D Chart Section... -->
+        <section id="sec-chart" class="section-container w-full">
+            <div class="glass-panel p-6 md:p-10 w-full">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold gold-shimmer serif-luxury">Visualisasi Pertumbuhan</h2>
+                        <p class="text-sm text-gray-400 mt-1 tracking-wide">Grafik komparatif laju elongasi tertinggi (Hari 1 - Hari 5)</p>
+                    </div>
+                    <button onclick="goToSection('sec-observasi')" class="btn-luxury px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase cursor-pointer">
+                        Detail Tabel <i class="fa-solid fa-table ml-2"></i>
+                    </button>
+                </div>
+                
+                <!-- Chart Container -->
+                <div class="relative w-full h-[50vh] md:h-[60vh] glass-card rounded-xl p-4">
+                    <canvas id="growthChart"></canvas>
+                </div>
+                
+                <div class="mt-6 flex justify-between items-center text-xs text-gray-400">
+                    <span><i class="fa-solid fa-circle-info text-[#d4af37] mr-2"></i>Satuan dalam sentimeter (cm)</span>
+                    <button onclick="goToSection('sec-opening')" class="hover:text-white transition-colors"><i class="fa-solid fa-rotate-left mr-2"></i>Kembali</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 3: OBSERVATION TABLES (SLIDER) -->
+        <!-- ============================================== -->
+        <!-- STREAMING_CHUNK:Building Observation Slider Section... -->
+        <section id="sec-observasi" class="section-container w-full">
+            <div class="glass-panel p-6 md:p-10">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl md:text-4xl font-bold gold-shimmer serif-luxury mb-2">Jurnal Pengamatan</h2>
+                    <p class="text-gray-400 text-sm tracking-wide">Data empiris perkecambahan biji kacang hijau</p>
+                </div>
+
+                <div class="slider-wrapper" id="obs-slider">
+                    <div class="slider-track" id="obs-track">
+                        
+                        <!-- DAY 1 -->
+                        <div class="slide">
+                            <h3 class="text-xl font-bold text-white mb-6 border-b border-[#d4af37]/30 pb-2 inline-block">Hari Ke-1</h3>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div class="glass-card rounded-xl overflow-hidden">
+                                    <table class="sci-table">
+                                        <tr><th class="text-left">Media Tanam</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                                        <tr><td class="text-left">Tanah (Gelap)</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                        <tr><td class="text-left">Tanah (Terang)</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                        <tr><td class="text-left">Kapas (Gelap)</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                        <tr><td class="text-left">Kapas (Terang)</td><td class="text-[#d4af37] font-bold">0,2</td><td class="text-[#d4af37] font-bold">0,3</td><td class="text-[#d4af37] font-bold">0,1</td><td class="text-[#d4af37] font-bold">0,2</td></tr>
+                                    </table>
+                                </div>
+                                <div class="flex flex-col gap-4 justify-center">
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-gray-500">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Analisis: Media Tanah</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Belum terdapat aktivitas perkecambahan atau kemunculan radikula pada seluruh sampel di media tanah, baik pada kondisi gelap maupun terang. Biji diduga masih dalam fase awal penyerapan air.</p>
+                                    </div>
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-[#d4af37]">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-[#d4af37] mb-1">Analisis: Media Kapas</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Terjadi perbedaan signifikan. Biji pada kapas area terang telah menunjukkan keberhasilan fase imbibisi yang ditandai dengan pecahnya kulit biji dan kemunculan radikula berukuran milimeter, sedangkan kapas area gelap belum menunjukkan aktivitas morfologis apapun.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DAY 2 -->
+                        <div class="slide">
+                            <h3 class="text-xl font-bold text-white mb-6 border-b border-[#d4af37]/30 pb-2 inline-block">Hari Ke-2</h3>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div class="glass-card rounded-xl overflow-hidden">
+                                    <table class="sci-table">
+                                        <tr><th class="text-left">Media Tanam</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                                        <tr><td class="text-left">Tanah (Gelap)</td><td>0,9</td><td>-</td><td>0,5</td><td>0,2</td></tr>
+                                        <tr><td class="text-left">Tanah (Terang)</td><td class="text-green-400 font-bold">1,9</td><td>-</td><td class="text-green-400 font-bold">1,5</td><td class="text-green-400 font-bold">2,0</td></tr>
+                                        <tr><td class="text-left">Kapas (Gelap)</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                        <tr><td class="text-left">Kapas (Terang)</td><td>0,7</td><td>1,1</td><td>0,5</td><td>0,8</td></tr>
+                                    </table>
+                                </div>
+                                <div class="flex flex-col gap-4 justify-center">
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-green-500">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-green-400 mb-1">Analisis: Media Tanah</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Pertumbuhan mulai teramati pada kedua kondisi. Tanah area terang mencatat laju elongasi epigeal tercepat (hingga 2,0 cm). Pada tanah area gelap, pertumbuhan terjadi secara parsial (Sampel B belum menunjukkan pertumbuhan).</p>
+                                    </div>
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-gray-500">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Analisis: Media Kapas</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Laju perpanjangan kecambah berlanjut secara konstan pada kapas terang dengan rata-rata tinggi di bawah 1,5 cm. Sampel pada media kapas gelap masih dalam kondisi dormansi tanpa indikasi pecah tunas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DAY 3 -->
+                        <div class="slide">
+                            <h3 class="text-xl font-bold text-white mb-6 border-b border-[#d4af37]/30 pb-2 inline-block">Hari Ke-3</h3>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div class="glass-card rounded-xl overflow-hidden">
+                                    <table class="sci-table">
+                                        <tr><th class="text-left">Media Tanam</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                                        <tr><td class="text-left">Tanah (Gelap)</td><td>2,5</td><td>0,1</td><td>3,0</td><td>0,3</td></tr>
+                                        <tr><td class="text-left">Tanah (Terang)</td><td class="text-green-400 font-bold">5,0</td><td class="text-green-400 font-bold">3,0</td><td class="text-green-400 font-bold">2,7</td><td class="text-green-400 font-bold">4,8</td></tr>
+                                        <tr><td class="text-left">Kapas (Gelap)</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                                        <tr><td class="text-left">Kapas (Terang)</td><td>1,9</td><td>1,6</td><td>1,2</td><td>1,6</td></tr>
+                                    </table>
+                                </div>
+                                <div class="flex flex-col gap-4 justify-center">
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-green-500">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-green-400 mb-1">Analisis: Media Tanah</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Seluruh populasi sampel pada media tanah telah berkecambah (Sampel B tanah gelap mulai muncul ke permukaan). Tanah terang mempertahankan dominansi pertumbuhan eksponensial dengan tinggi maksimum mencapai 5,0 cm, disertai indikasi perkembangan kotiledon.</p>
+                                    </div>
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-gray-500">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Analisis: Media Kapas</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Pertumbuhan pada kapas terang mengalami perlambatan laju (hanya bertambah beberapa milimeter). Secara kontras, sampel pada kapas gelap masih berstatus tidak aktif secara morfologis.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DAY 4 -->
+                        <div class="slide">
+                            <h3 class="text-xl font-bold text-white mb-6 border-b border-[#d4af37]/30 pb-2 inline-block">Hari Ke-4</h3>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div class="glass-card rounded-xl overflow-hidden">
+                                    <table class="sci-table">
+                                        <tr><th class="text-left">Media Tanam</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                                        <tr><td class="text-left">Tanah (Gelap)</td><td>2,6</td><td>3,0</td><td>3,7</td><td>6,0</td></tr>
+                                        <tr><td class="text-left">Tanah (Terang)</td><td class="text-green-400 font-bold">12,0</td><td class="text-green-400 font-bold">10,0</td><td class="text-green-400 font-bold">9,5</td><td class="text-green-400 font-bold">11,0</td></tr>
+                                        <tr><td class="text-left">Kapas (Gelap)</td><td class="text-[#d4af37]">7,0</td><td class="text-[#d4af37]">6,5</td><td class="text-[#d4af37]">5,0</td><td class="text-[#d4af37]">6,0</td></tr>
+                                        <tr><td class="text-left">Kapas (Terang)</td><td>6,1</td><td>3,0</td><td>1,5</td><td>3,6</td></tr>
+                                    </table>
+                                </div>
+                                <div class="flex flex-col gap-4 justify-center">
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-green-500">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-green-400 mb-1">Analisis: Media Tanah</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Laju elongasi sel membedakan kedua sampel secara drastis. Tanah area terang menunjukkan perkembangan fotomorfogenesis yang ideal dengan ketinggian mencapai 12,0 cm (batang mulai kehijauan). Tanah gelap menunjukkan laju perpanjangan moderat.</p>
+                                    </div>
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-[#d4af37]">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-[#d4af37] mb-1">Analisis: Media Kapas</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Terjadi pemecahan dormansi serentak pada kapas area gelap. Akibat ketiadaan cahaya, terjadi pemanjangan hipokotil yang drastis (hingga 7,0 cm dalam satu hari) mengindikasikan awal mula etiolasi. Kapas area terang tertinggal dalam rasio tinggi.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DAY 5 -->
+                        <div class="slide">
+                            <h3 class="text-xl font-bold text-white mb-6 border-b border-[#d4af37]/30 pb-2 inline-block">Hari Ke-5 (Akhir)</h3>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div class="glass-card rounded-xl overflow-hidden shadow-[0_0_20px_rgba(212,175,55,0.2)] border-[#d4af37]/50">
+                                    <table class="sci-table">
+                                        <tr><th class="text-left">Media Tanam</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                                        <tr class="bg-[#d4af37]/10"><td class="text-left font-bold text-[#d4af37]">Tanah (Gelap)</td><td class="text-[#d4af37] font-bold">14,0</td><td class="text-[#d4af37] font-bold">12,0</td><td class="text-[#d4af37] font-extrabold text-lg">16,0</td><td class="text-[#d4af37] font-bold">10,0</td></tr>
+                                        <tr><td class="text-left">Tanah (Terang)</td><td>14,0</td><td>11,0</td><td>10,0</td><td>14,0</td></tr>
+                                        <tr><td class="text-left">Kapas (Gelap)</td><td>7,0</td><td>6,5</td><td>5,0</td><td>6,0</td></tr>
+                                        <tr><td class="text-left">Kapas (Terang)</td><td>10,3</td><td>6,0</td><td>5,0</td><td>7,0</td></tr>
+                                    </table>
+                                </div>
+                                <div class="flex flex-col gap-4 justify-center">
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-[#d4af37] bg-[#d4af37]/5">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-[#d4af37] mb-1">Analisis: Media Tanah</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Fenomena etiolasi terbukti secara kuantitatif. Tanah area gelap mencatat tinggi maksimum pengamatan (16,0 cm) dengan morfologi batang yang memanjang ekstrem dan pucat. Tanah terang menunjukkan pertumbuhan vegetatif normal dengan daun sejati pertama.</p>
+                                    </div>
+                                    <div class="glass-card p-4 rounded-xl border-l-2 border-l-gray-500">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Analisis: Media Kapas</h4>
+                                        <p class="text-sm font-light text-gray-200 leading-relaxed text-justify">Pertumbuhan pada kapas area gelap mengalami stagnasi. Pada kapas area terang, laju pertumbuhan kembali aktif hingga menyentuh 10,3 cm meskipun secara umum nutrisi media kapas tidak seoptimal media tanah.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Slider Navigation -->
+                <div class="mt-8 flex justify-between items-center px-4">
+                    <button id="obs-prev" class="text-gray-400 hover:text-[#d4af37] transition-colors disabled:opacity-30 disabled:cursor-not-allowed p-2"><i class="fa-solid fa-chevron-left fa-xl"></i></button>
+                    <div id="obs-dots" class="flex gap-2"></div>
+                    <button id="obs-next" class="text-gray-400 hover:text-[#d4af37] transition-colors disabled:opacity-30 disabled:cursor-not-allowed p-2"><i class="fa-solid fa-chevron-right fa-xl"></i></button>
+                    <button id="obs-finish" onclick="goToSection('sec-qna')" class="hidden btn-luxury px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase cursor-pointer">Sesi Diskusi <i class="fa-solid fa-microscope ml-2"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 4: Q&A (SCIENTIFIC DISCUSSION) -->
+        <!-- ============================================== -->
+        <!-- STREAMING_CHUNK:Building QnA Section... -->
+        <section id="sec-qna" class="section-container w-full">
+            <div class="glass-panel p-6 md:p-12 w-full">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl md:text-4xl font-bold gold-shimmer serif-luxury mb-2">Analisis & Diskusi</h2>
+                    <p class="text-gray-400 text-sm tracking-wide">Interpretasi Ilmiah Data Praktikum</p>
+                </div>
+
+                <div class="slider-wrapper" id="qna-slider">
+                    <div class="slider-track" id="qna-track">
+                        
+                        <!-- Q1 -->
+                        <div class="slide">
+                            <div class="max-w-4xl mx-auto h-full flex flex-col justify-center">
+                                <span class="text-[#d4af37] text-xs font-bold tracking-[0.2em] uppercase mb-4 block">Parameter 1</span>
+                                <h3 class="text-xl md:text-2xl text-white font-medium mb-6 leading-relaxed">Berdasarkan tabel pengamatan, manakah pertumbuhan yang lebih cepat, di tempat yang terang atau tempat yang gelap?</h3>
+                                <div class="glass-card p-6 md:p-8 rounded-xl border-l-4 border-l-[#d4af37]">
+                                    <p class="text-gray-300 text-sm md:text-base leading-relaxed text-justify font-light">
+                                        Pada fase awal perkecambahan (Hari ke-1 hingga Hari ke-3), laju pertumbuhan di area terang berlangsung lebih terakselerasi, dibuktikan dengan ukuran batang yang mendahului sampel lainnya.<br><br>Namun, pada fase pengamatan lanjutan (Hari ke-4 dan ke-5), perpanjangan sel pada area gelap terjadi secara masif. Secara kumulatif, spesimen pada area gelap mencapai tinggi maksimum tertinggi (16 cm) dibandingkan area terang (14 cm).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="slide">
+                            <div class="max-w-4xl mx-auto h-full flex flex-col justify-center">
+                                <span class="text-[#d4af37] text-xs font-bold tracking-[0.2em] uppercase mb-4 block">Parameter 2</span>
+                                <h3 class="text-xl md:text-2xl text-white font-medium mb-6 leading-relaxed">Mengapa di tempat yang gelap tumbuhnya lebih tinggi dibandingkan dengan di tempat yang terang?</h3>
+                                <div class="glass-card p-6 md:p-8 rounded-xl border-l-4 border-l-[#d4af37]">
+                                    <p class="text-gray-300 text-sm md:text-base leading-relaxed text-justify font-light">
+                                        Hal ini merupakan manifestasi dari aktivitas fitohormon auksin (<i class="text-gray-400">Indole-3-acetic acid</i>). Auksin berfungsi menstimulasi elongasi sel pada daerah meristem apikal. Karena auksin bersifat fotodestruktif (inaktif saat terpapar cahaya intensitas tinggi), ketiadaan cahaya menyebabkan hormon ini bekerja maksimum tanpa inhibisi.<br><br>Kondisi fisiologis yang menghasilkan batang panjang, pucat, dan lemah akibat kekurangan cahaya ini disebut sebagai fenomena <strong class="text-[#d4af37] font-semibold">Etiolasi</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="slide">
+                            <div class="max-w-4xl mx-auto h-full flex flex-col justify-center">
+                                <span class="text-[#d4af37] text-xs font-bold tracking-[0.2em] uppercase mb-4 block">Parameter 3</span>
+                                <h3 class="text-xl md:text-2xl text-white font-medium mb-6 leading-relaxed">Apa saja faktor yang mempengaruhi pertumbuhan dan perkembangan pada pengamatan tersebut?</h3>
+                                <div class="glass-card p-6 md:p-8 rounded-xl border-l-4 border-l-[#d4af37]">
+                                    <p class="text-gray-300 text-sm md:text-base leading-relaxed text-justify font-light mb-3">Parameter pertumbuhan sangat dipengaruhi oleh kolaborasi faktor berikut:</p>
+                                    <ul class="list-disc pl-5 space-y-2 text-gray-300 text-sm md:text-base font-light">
+                                        <li><strong class="text-gray-100 font-medium">Faktor Eksternal:</strong> Intensitas cahaya bertindak sebagai regulator pertumbuhan. Ketersediaan air esensial untuk memicu fase imbibisi, serta faktor nutrisi media tanam (terbukti media tanah menghasilkan laju tumbuh superior dibanding kapas).</li>
+                                        <li><strong class="text-gray-100 font-medium">Faktor Internal:</strong> Regulasi genetik benih serta sintesis/distribusi hormon auksin yang mengatur pembelahan sel.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="slide">
+                            <div class="max-w-4xl mx-auto h-full flex flex-col justify-center">
+                                <span class="text-[#d4af37] text-xs font-bold tracking-[0.2em] uppercase mb-4 block">Parameter 4</span>
+                                <h3 class="text-xl md:text-2xl text-white font-medium mb-6 leading-relaxed">Apa hubungannya hormon Auksin dengan cahaya matahari?</h3>
+                                <div class="glass-card p-6 md:p-8 rounded-xl border-l-4 border-l-[#d4af37]">
+                                    <p class="text-gray-300 text-sm md:text-base leading-relaxed text-justify font-light">
+                                        Cahaya matahari dan hormon auksin memiliki korelasi antagonistik (berlawanan). Cahaya bertindak sebagai inhibitor terhadap distribusi auksin. Paparan foton menyebabkan fotodestruksi auksin pada sisi batang yang terkena cahaya, sehingga auksin berdistribusi asimetris menuju sisi gelap.<br><br>Akibatnya, paparan cahaya penuh memperlambat elongasi (terkontrol/kuat). Sebaliknya, ketiadaan cahaya mempertahankan konsentrasi auksin penuh, memicu pemanjangan sel apikal ekstrem.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Slider Navigation -->
+                <div class="mt-8 flex justify-between items-center px-4">
+                    <button id="qna-prev" class="text-gray-400 hover:text-[#d4af37] transition-colors disabled:opacity-30 disabled:cursor-not-allowed p-2"><i class="fa-solid fa-chevron-left fa-xl"></i></button>
+                    <div id="qna-dots" class="flex gap-2"></div>
+                    <button id="qna-next" class="text-gray-400 hover:text-[#d4af37] transition-colors disabled:opacity-30 disabled:cursor-not-allowed p-2"><i class="fa-solid fa-chevron-right fa-xl"></i></button>
+                    <button id="qna-finish" onclick="goToSection('sec-outro')" class="hidden btn-luxury px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase cursor-pointer">Selesai <i class="fa-solid fa-check ml-2"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 5: OUTRO -->
+        <!-- ============================================== -->
+        <!-- STREAMING_CHUNK:Building Outro Section... -->
+        <section id="sec-outro" class="section-container w-full">
+            <div class="glass-panel p-16 md:p-24 text-center max-w-3xl mx-auto flex flex-col items-center justify-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(212,175,55,0.15)_0%,_transparent_70%)] pointer-events-none"></div>
+                
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 gold-shimmer serif-luxury uppercase tracking-widest">Selesai</h1>
+                <div class="h-px w-24 bg-[#d4af37]/50 mb-8"></div>
+                <p class="text-gray-300 text-lg md:text-xl font-light mb-12 tracking-wider leading-relaxed">
+                    Terima kasih atas perhatiannya pada pemaparan observasi morfologis dan fisiologis kelompok kami.
+                </p>
+
+                <button onclick="goToSection('sec-opening')" class="text-[#d4af37] hover:text-white transition-colors text-sm tracking-widest uppercase flex flex-col items-center gap-2 group cursor-pointer">
+                    <i class="fa-solid fa-power-off text-2xl group-hover:scale-110 transition-transform"></i>
+                    Kembali ke Awal
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- STREAMING_CHUNK:Adding JavaScript logic for UI and Chart... -->
+    <script>
+        // --- 1. Background Particle System ---
+        const bgContainer = document.getElementById('bg-particles');
+        for(let i = 0; i < 20; i++) {
+            let p = document.createElement('div');
+            p.className = 'particle';
+            p.style.width = Math.random() * 200 + 50 + 'px';
+            p.style.height = p.style.width;
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.top = Math.random() * 100 + 50 + 'vh';
+            p.style.animationDelay = Math.random() * 10 + 's';
+            bgContainer.appendChild(p);
+        }
+
+        // --- 2. Navigation Logic ---
+        let chartInstance = null;
+        function goToSection(secId) {
+            document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
+            document.getElementById(secId).classList.add('active');
+            
+            // Render Chart only when its section is opened to ensure canvas is visible for sizing
+            if(secId === 'sec-chart') {
+                setTimeout(renderChart, 100);
+            }
+        }
+
+        // --- 3. Luxury Chart.js Logic ---
+        function renderChart() {
+            if(chartInstance) chartInstance.destroy();
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            // Glow effect for lines
+            Chart.defaults.elements.line.borderWidth = 3;
+            Chart.defaults.elements.point.radius = 4;
+            Chart.defaults.elements.point.hoverRadius = 7;
+            Chart.defaults.color = '#cbd5e1';
+            Chart.defaults.font.family = "'Inter', sans-serif";
+
+            // Drawing glow on canvas directly via shadow
+            const customPlugin = {
+                id: 'customShadow',
+                beforeDatasetsDraw: function(chart) {
+                    chart.ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                    chart.ctx.shadowBlur = 10;
+                    chart.ctx.shadowOffsetX = 0;
+                    chart.ctx.shadowOffsetY = 4;
+                }
+            };
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Hari 1', 'Hari 2', 'Hari 3', 'Hari 4', 'Hari 5'],
+                    datasets: [
+                        {
+                            label: 'Tanah (Gelap)',
+                            data: [0, 0.9, 3.0, 6.0, 16.0],
+                            borderColor: '#d4af37', // Gold
+                            backgroundColor: '#d4af37',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Tanah (Terang)',
+                            data: [0, 2.0, 5.0, 12.0, 14.0],
+                            borderColor: '#4ade80', // Emerald Green
+                            backgroundColor: '#4ade80',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Kapas (Gelap)',
+                            data: [0, 0, 0, 7.0, 7.0],
+                            borderColor: '#94a3b8', // Silver
+                            backgroundColor: '#94a3b8',
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Kapas (Terang)',
+                            data: [0.3, 1.1, 1.9, 6.1, 10.3],
+                            borderColor: '#fb923c', // Bronze
+                            backgroundColor: '#fb923c',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
+                        tooltip: {
+                            backgroundColor: 'rgba(2, 26, 13, 0.9)',
+                            titleColor: '#d4af37',
+                            bodyColor: '#fff',
+                            borderColor: '#d4af37',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            title: { display: true, text: 'Tinggi (cm)', color: 'rgba(212,175,55,0.7)' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                },
+                plugins: [customPlugin]
+            });
+        }
+
+        // --- 4. Custom Slider Logic ---
+        class LuxurySlider {
+            constructor(trackId, prevBtnId, nextBtnId, dotsId, finishBtnId) {
+                this.track = document.getElementById(trackId);
+                this.slides = this.track.querySelectorAll('.slide');
+                this.prevBtn = document.getElementById(prevBtnId);
+                this.nextBtn = document.getElementById(nextBtnId);
+                this.dotsContainer = document.getElementById(dotsId);
+                this.finishBtn = document.getElementById(finishBtnId);
+                this.currentIndex = 0;
+                
+                this.init();
+            }
+
+            init() {
+                // Create dots
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = `w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${i === 0 ? 'bg-[#d4af37] w-6' : 'bg-gray-600'}`;
+                    dot.addEventListener('click', () => this.goTo(i));
+                    this.dotsContainer.appendChild(dot);
+                });
+
+                // Button Listeners
+                if(this.prevBtn) this.prevBtn.addEventListener('click', () => this.goTo(this.currentIndex - 1));
+                if(this.nextBtn) this.nextBtn.addEventListener('click', () => this.goTo(this.currentIndex + 1));
+
+                // Touch/Swipe Logic
+                let startX = 0;
+                this.track.addEventListener('touchstart', e => startX = e.touches[0].clientX, {passive:true});
+                this.track.addEventListener('touchend', e => {
+                    let endX = e.changedTouches[0].clientX;
+                    if(startX - endX > 50) this.goTo(this.currentIndex + 1);
+                    if(endX - startX > 50) this.goTo(this.currentIndex - 1);
+                }, {passive:true});
+
+                this.updateUI();
+            }
+
+            goTo(index) {
+                if(index < 0 || index >= this.slides.length) return;
+                this.currentIndex = index;
+                this.track.style.transform = `translateX(-${index * 100}%)`;
+                this.updateUI();
+            }
+
+            updateUI() {
+                // Update Dots
+                Array.from(this.dotsContainer.children).forEach((dot, i) => {
+                    dot.className = i === this.currentIndex ? 'bg-[#d4af37] w-6 h-2 rounded-full transition-all duration-300 cursor-pointer shadow-[0_0_8px_rgba(212,175,55,0.6)]' : 'w-2 h-2 rounded-full bg-gray-600 hover:bg-gray-400 transition-all duration-300 cursor-pointer';
+                });
+
+                // Update Buttons
+                if(this.prevBtn) this.prevBtn.disabled = this.currentIndex === 0;
+                
+                if(this.currentIndex === this.slides.length - 1) {
+                    if(this.nextBtn) this.nextBtn.classList.add('hidden');
+                    if(this.finishBtn) this.finishBtn.classList.remove('hidden');
+                } else {
+                    if(this.nextBtn) this.nextBtn.classList.remove('hidden');
+                    if(this.finishBtn) this.finishBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        // Initialize sliders when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new LuxurySlider('obs-track', 'obs-prev', 'obs-next', 'obs-dots', 'obs-finish');
+            new LuxurySlider('qna-track', 'qna-prev', 'qna-next', 'qna-dots', 'qna-finish');
+        });
+
+    </script>
+</body>
+</html>
